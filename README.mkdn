@@ -2,7 +2,7 @@
 
 API::Stripe - Perl 5 API wrapper for Stripe
 
-[![Build Status](https://travis-ci.org/alnewkirk/API-Stripe.png?branch=master)](https://travis-ci.org/alnewkirk/API-Stripe)
+[![Build Status](https://travis-ci.org/AccessAbundant/API-Stripe.png?branch=master)](https://travis-ci.org/AccessAbundant/API-Stripe)
 
 # VERSION
 

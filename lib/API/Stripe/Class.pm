@@ -1,16 +1,15 @@
 package API::Stripe::Class;
 
-use Extorter;
+use Import::Into;
 
 # VERSION
 
 sub import {
-    my $class  = shift;
     my $target = caller;
 
-    $class->extort::into($target, '*Data::Object::Class');
-    $class->extort::into($target, '*API::Stripe::Signature');
-    $class->extort::into($target, '*API::Stripe::Type');
+    Data::Object::Class->import::into($target);
+    Data::Object::Signatures->import::into($target);
+    Data::Object::Library->import::into($target => -types);
 
     return;
 }
