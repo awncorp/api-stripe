@@ -1,6 +1,10 @@
 Changelog for API-Stripe
 
-0.03 2015-07-01T16:02:39
+0.04 2015-07-01T16:02:51
+ - No changes found
+
+0.03 2015-07-01T16:02:45
+ - v0.03
  - Refactored dependencies.
  - Initial commit.
 
