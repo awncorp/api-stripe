@@ -1,41 +1,36 @@
 # ABSTRACT: Perl 5 API wrapper for Stripe
 package API::Stripe;
 
-use API::Stripe::Class;
+use namespace::autoclean -except => 'has';
 
-extends 'API::Stripe::Client';
+use Data::Object::Class;
+use Data::Object::Class::Syntax;
+use Data::Object::Signatures;
 
-use Carp ();
-use Scalar::Util ();
+use Data::Object qw(load);
+use Data::Object::Library qw(Str);
+
+extends 'API::Client';
 
 # VERSION
 
-has identifier => (
-    is       => 'rw',
-    isa      => Str,
-    default  => 'API::Stripe (Perl)',
-);
+our $DEFAULT_URL = "https://api.stripe.com";
 
-has username => (
-    is       => 'rw',
-    isa      => Str,
-    required => 1,
-);
+# ATTRIBUTES
 
-has version => (
-    is       => 'rw',
-    isa      => Int,
-    default  => 1,
-);
+has username => rw;
 
-method AUTOLOAD () {
-    my ($package, $method) = our $AUTOLOAD =~ /^(.+)::(.+)$/;
-    Carp::croak "Undefined subroutine &${package}::$method called"
-        unless Scalar::Util::blessed $self && $self->isa(__PACKAGE__);
+# CONSTRAINTS
 
-    # return new resource instance dynamically
-    return $self->resource($method, @_);
-}
+req username => Str;
+
+# DEFAULTS
+
+def identifier => 'API::Stripe (Perl)';
+def url        => method { load('Mojo::URL')->new($DEFAULT_URL) };
+def version    => 1;
+
+# CONSTRUCTION
 
 method BUILD () {
     my $identifier = $self->identifier;
@@ -57,29 +52,10 @@ method PREPARE ($ua, $tx, %args) {
     my $url     = $tx->req->url;
 
     # default headers
-    $headers->header('Content-Type' => 'application/json');
-}
+    # $headers->header('Content-Type' => 'application/json');
+    # $headers->header('Content-Type' => 'application/x-www-form-urlencoded');
 
-method action ($method, %args) {
-    $method = uc($method || 'get');
-
-    # execute transaction and return response
-    return $self->$method(%args);
-}
-
-method create (%args) {
-    # execute transaction and return response
-    return $self->POST(%args);
-}
-
-method delete (%args) {
-    # execute transaction and return response
-    return $self->DELETE(%args);
-}
-
-method fetch (%args) {
-    # execute transaction and return response
-    return $self->GET(%args);
+    return $self;
 }
 
 method resource (@segments) {
@@ -103,11 +79,6 @@ method resource (@segments) {
 
     # return resource instance
     return $instance;
-}
-
-method update (%args) {
-    # execute transaction and return response
-    return $self->PUT(%args);
 }
 
 1;
@@ -137,164 +108,9 @@ method update (%args) {
 
 This distribution provides an object-oriented thin-client library for
 interacting with the Stripe (L<https://stripe.com>) API. For usage and
-documentation information visit L<https://stripe.com/docs/api>.
-
-=cut
-
-=head1 THIN CLIENT
-
-A thin-client library is advantageous as it has complete API coverage and
-can easily adapt to changes in the API with minimal effort. As a thin-client
-library, this module does not map specific HTTP requests to specific routines,
-nor does it provide parameter validation, pagination, or other conventions
-found in typical API client implementations, instead, it simply provides a
-simple and consistent mechanism for dynamically generating HTTP requests.
-Additionally, this module has support for debugging and retrying API calls as
-well as throwing exceptions when 4xx and 5xx server response codes are
-returned.
-
-=cut
-
-=head2 Building
-
-    my $charge = $stripe->charges('ch_163Gh12CVMZwIkvc');
-
-    $charge->action; # GET /charges/ch_163Gh12CVMZwIkvc
-    $charge->action('head'); # HEAD /charges/ch_163Gh12CVMZwIkvc
-    $charge->action('patch'); # PATCH /charges/ch_163Gh12CVMZwIkvc
-
-Building up an HTTP request object is extremely easy, simply call method names
-which correspond to the API's path segments in the resource you wish to execute
-a request against. This module uses autoloading and returns a new instance with
-each method call. The following is the equivalent:
-
-=head2 Chaining
-
-    my $refunds = $stripe->resource('charges', 'ch_163Gh12CVMZwIkvc', 'refunds');
-
-    # or
-
-    my $charge = $stripe->charges('ch_163Gh12CVMZwIkvc');
-    my $refunds = $charge->refunds;
-
-    # then
-
-    $refunds->action('put', %args); # PUT /charges/ch_163Gh12CVMZwIkvc/refunds
-
-Because each call returns a new API instance configured with a resource locator
-based on the supplied parameters, reuse and request isolation are made simple,
-i.e., you will only need to configure the client once in your application.
-
-=head2 Fetching
-
-    my $charges = $stripe->charges;
-
-    # query-string parameters
-
-    $charges->fetch( query => { ... } );
-
-    # equivalent to
-
-    my $charges = $stripe->resource('charges');
-
-    $charges->action( get => ( query => { ... } ) );
-
-This example illustrates how you might fetch an API resource.
-
-=head2 Creating
-
-    my $charges = $stripe->charges;
-
-    # content-body parameters
-
-    $charges->create( data => { ... } );
-
-    # query-string parameters
-
-    $charges->create( query => { ... } );
-
-    # equivalent to
-
-    $stripe->resource('charges')->action(
-        post => ( query => { ... }, data => { ... } )
-    );
-
-This example illustrates how you might create a new API resource.
-
-=head2 Updating
-
-    my $charges = $stripe->charges;
-    my $charge  = $charges->resource('ch_163Gh12CVMZwIkvc');
-
-    # content-body parameters
-
-    $charge->update( data => { ... } );
-
-    # query-string parameters
-
-    $charge->update( query => { ... } );
-
-    # or
-
-    my $charge = $stripe->charges('ch_163Gh12CVMZwIkvc');
-
-    $charge->update(...);
-
-    # equivalent to
-
-    $stripe->resource('charges')->action(
-        put => ( query => { ... }, data => { ... } )
-    );
-
-This example illustrates how you might update a new API resource.
-
-=head2 Deleting
-
-    my $charges = $stripe->charges;
-    my $charge  = $charges->resource('ch_163Gh12CVMZwIkvc');
-
-    # content-body parameters
-
-    $charge->delete( data => { ... } );
-
-    # query-string parameters
-
-    $charge->delete( query => { ... } );
-
-    # or
-
-    my $charge = $stripe->charges('ch_163Gh12CVMZwIkvc');
-
-    $charge->delete(...);
-
-    # equivalent to
-
-    $stripe->resource('charges')->action(
-        delete => ( query => { ... }, data => { ... } )
-    );
-
-This example illustrates how you might delete an API resource.
-
-=cut
-
-=head2 Transacting
-
-    my $charges = $stripe->resource('charges', 'ch_163Gh12CVMZwIkvc');
-
-    my ($results, $transaction) = $charges->action( ... );
-
-    my $request  = $transaction->req;
-    my $response = $transaction->res;
-
-    my $headers;
-
-    $headers = $request->headers;
-    $headers = $response->headers;
-
-    # etc
-
-This example illustrates how you can access the transaction object used
-represent and process the HTTP transaction.
+documentation information visit L<https://stripe.com/docs/api>. API::Stripe is
+derived from L<API::Client> and inherits all of it's functionality. Please read
+the documentation for API::Client for more usage information.
 
 =cut
 
@@ -303,7 +119,7 @@ represent and process the HTTP transaction.
     $stripe->identifier;
     $stripe->identifier('IDENTIFIER');
 
-The identifier parameter should be set to a string that identifies your app.
+The identifier attribute should be set to a string that identifies your app.
 
 =cut
 
@@ -312,7 +128,7 @@ The identifier parameter should be set to a string that identifies your app.
     $stripe->username;
     $stripe->username('USERNAME');
 
-The username parameter should be set to an API key associated with your account.
+The username attribute should be set to an API key associated with your account.
 
 =cut
 
