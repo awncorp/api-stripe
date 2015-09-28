@@ -1,4 +1,4 @@
-# ABSTRACT: Perl 5 API wrapper for Stripe
+# ABSTRACT: Stripe.com API Client
 package API::Stripe;
 
 use namespace::autoclean -except => 'has';
