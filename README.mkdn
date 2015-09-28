@@ -1,12 +1,12 @@
 # NAME
 
-API::Stripe - Perl 5 API wrapper for Stripe
+API::Stripe - Stripe.com API Client
 
 [![Build Status](https://travis-ci.org/alnewkirk/API-Stripe.png?branch=master)](https://travis-ci.org/alnewkirk/API-Stripe)
 
 # VERSION
 
-version 0.04
+version 0.05
 
 # SYNOPSIS
 
@@ -64,7 +64,7 @@ The debug attribute if true prints HTTP requests and responses to standard out.
     $stripe->fatal(1);
 
 The fatal attribute if true promotes 4xx and 5xx server response codes to
-exceptions, a [API::Stripe::Exception](https://metacpan.org/pod/API::Stripe::Exception) object.
+exceptions, a [API::Client::Exception](https://metacpan.org/pod/API::Client::Exception) object.
 
 ## retries
 

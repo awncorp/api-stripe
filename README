@@ -1,10 +1,10 @@
 NAME
 
-    API::Stripe - Perl 5 API wrapper for Stripe
+    API::Stripe - Stripe.com API Client
 
 VERSION
 
-    version 0.04
+    version 0.05
 
 SYNOPSIS
 
@@ -66,7 +66,7 @@ ATTRIBUTES
         $stripe->fatal(1);
 
     The fatal attribute if true promotes 4xx and 5xx server response codes
-    to exceptions, a API::Stripe::Exception object.
+    to exceptions, a API::Client::Exception object.
 
  retries
 
