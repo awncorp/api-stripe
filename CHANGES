@@ -1,7 +1,8 @@
 Changelog for API-Stripe
 
-0.04 2015-07-01T16:02:51
- - No changes found
+0.04 2015-09-28T03:47:21
+ - Refactored to derive from API::Client.
+ - Updated dist.ini.
 
 0.03 2015-07-01T16:02:45
  - v0.03
@@ -15,4 +16,3 @@ Changelog for API-Stripe
 0.01 2015-05-17T03:27:01
  - v0.01
  - Initial commit.
-
