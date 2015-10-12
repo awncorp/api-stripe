@@ -1,6 +1,7 @@
 Changelog for API-Stripe
 
-0.07 2015-10-12T20:40:19
+0.07 2015-10-12T20:41:41
+ - Updated build.
  - Fixed content-type for DELETE, PATCH, POST, and PUT requests.
 
 0.06 2015-10-11T08:10:30
