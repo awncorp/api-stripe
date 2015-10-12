@@ -22,7 +22,7 @@ my %WriteMakefileArgs = (
     "Data::Object" => "0.57",
     "Mojolicious" => "6.22"
   },
-  "VERSION" => "0.06",
+  "VERSION" => "0.07",
   "test" => {
     "TESTS" => "t/*.t"
   }
