@@ -62,10 +62,17 @@ method PREPARE ($ua, $tx, %args) {
 
     my $headers = $tx->req->headers;
     my $url     = $tx->req->url;
+    my $method  = $tx->req->method;
+    my $content = 'application/json';
+
+    if (grep lc $method eq $_, qw(delete patch post put)) {
+
+        $content = 'application/x-www-form-urlencoded';
+
+    }
 
     # default headers
-    # $headers->header('Content-Type' => 'application/json');
-    # $headers->header('Content-Type' => 'application/x-www-form-urlencoded');
+    $headers->header('Content-Type' => $content);
 
     return $self;
 
